@@ -38,10 +38,23 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
     REDIS_PASSWORD: Optional[str] = Field(default=None, env="REDIS_PASSWORD")
     
-    # API Keys
+    # API Keys - Multiple Provider Support
+    # Free/Affordable Providers
+    GROQ_API_KEY: Optional[str] = Field(default=None, env="GROQ_API_KEY")
+    TOGETHER_API_KEY: Optional[str] = Field(default=None, env="TOGETHER_API_KEY")
+    ANYSCALE_API_KEY: Optional[str] = Field(default=None, env="ANYSCALE_API_KEY")
+    REPLICATE_API_KEY: Optional[str] = Field(default=None, env="REPLICATE_API_KEY")
+    HUGGINGFACE_API_KEY: Optional[str] = Field(default=None, env="HUGGINGFACE_API_KEY")
+    
+    # Premium Providers (Optional)
     OPENAI_API_KEY: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
     ANTHROPIC_API_KEY: Optional[str] = Field(default=None, env="ANTHROPIC_API_KEY")
+    
+    # Market Data APIs (Free Options)
     ALPHA_VANTAGE_API_KEY: Optional[str] = Field(default=None, env="ALPHA_VANTAGE_API_KEY")
+    TWELVE_DATA_API_KEY: Optional[str] = Field(default=None, env="TWELVE_DATA_API_KEY")
+    FINNHUB_API_KEY: Optional[str] = Field(default=None, env="FINNHUB_API_KEY")
+    FMP_API_KEY: Optional[str] = Field(default=None, env="FMP_API_KEY")
     POLYGON_API_KEY: Optional[str] = Field(default=None, env="POLYGON_API_KEY")
     
     # JWT Configuration
@@ -60,7 +73,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_PER_HOUR: int = Field(default=1000, env="RATE_LIMIT_PER_HOUR")
     
     # LLM Configuration
-    LLM_MODEL: str = Field(default="gpt-4-turbo-preview", env="LLM_MODEL")
+    LLM_PROVIDER: str = Field(default="groq", env="LLM_PROVIDER")
+    LLM_MODEL: str = Field(default="mixtral-8x7b-32768", env="LLM_MODEL")
     LLM_TEMPERATURE: float = Field(default=0.7, env="LLM_TEMPERATURE")
     LLM_MAX_TOKENS: int = Field(default=2000, env="LLM_MAX_TOKENS")
     
@@ -118,7 +132,18 @@ def validate_settings():
     errors = []
     
     if settings.ENVIRONMENT == "production":
-        if not settings.OPENAI_API_KEY and not settings.ANTHROPIC_API_KEY:
+        # At least one LLM provider must be configured
+        llm_providers = [
+            settings.GROQ_API_KEY,
+            settings.TOGETHER_API_KEY,
+            settings.ANYSCALE_API_KEY,
+            settings.REPLICATE_API_KEY,
+            settings.HUGGINGFACE_API_KEY,
+            settings.OPENAI_API_KEY,
+            settings.ANTHROPIC_API_KEY
+        ]
+        
+        if not any(llm_providers):
             errors.append("At least one LLM API key must be configured")
         
         if not settings.ENCRYPTION_KEY:
