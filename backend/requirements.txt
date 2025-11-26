@@ -2,6 +2,8 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
+pydantic==2.5.2
+pydantic-settings==2.1.0
 
 # Database
 sqlalchemy==2.0.23
@@ -11,7 +13,6 @@ psycopg2-binary==2.9.9
 
 # Redis
 redis==5.0.1
-aioredis==2.0.1
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -19,27 +20,35 @@ passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 cryptography==41.0.7
 
-# LLM & AI
-langchain==0.0.352
+# LLM & AI - Core
+langchain==0.1.0
+langchain-community==0.0.10
+
+# Groq (FREE - Recommended)
+groq==0.4.1
+
+# Other Free LLM Providers
+huggingface-hub==0.20.1
+replicate==0.22.0
+
+# Optional Premium Providers
 openai==1.6.1
 anthropic==0.8.1
-tiktoken==0.5.2
-faiss-cpu==1.7.4
+
+# Embeddings & Vector Store
+sentence-transformers==2.2.2
+faiss-cpu==1.8.0
 
 # Data Processing
 pandas==2.1.4
 numpy==1.26.2
-pydantic==2.5.2
-pydantic-settings==2.1.0
 
 # Market Data APIs
 yfinance==0.2.33
 alpha-vantage==2.3.1
-polygon-api-client==1.12.0
 
 # Async & Background Tasks
 celery==5.3.4
-flower==2.0.1
 
 # HTTP Clients
 httpx==0.25.2
@@ -47,40 +56,25 @@ aiohttp==3.9.1
 
 # WebSocket
 python-socketio==5.10.0
-langchain-groq==0.0.1  # Groq integration
-langchain-together==0.0.2  # Together AI integration
-langchain-community==0.0.10  # Community integrations
-groq==0.4.1  # Groq Python SDK
-together==0.2.11  # Together AI SDK
-replicate==0.22.0  # Replicate SDK
-huggingface-hub==0.20.1  # HuggingFace SDK
-transformers==4.36.2  # For local models
 websockets==12.0
 
 # Email
-python-emails==0.6.0
 jinja2==3.1.2
 
 # Monitoring & Logging
-sentry-sdk==1.39.1
 prometheus-client==0.19.0
 python-json-logger==2.0.7
 
-# Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
-httpx==0.25.2
-
-# Development
-black==23.12.0
-flake8==6.1.0
-mypy==1.7.1
-ipython==8.18.1
-
-# AWS SDK
+# AWS SDK (optional)
 boto3==1.34.7
 
 # Date & Time
 python-dateutil==2.8.2
 pytz==2023.3
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.12.0
+flake8==6.1.0
+ipython==8.18.1
