@@ -47,6 +47,14 @@ aiohttp==3.9.1
 
 # WebSocket
 python-socketio==5.10.0
+langchain-groq==0.0.1  # Groq integration
+langchain-together==0.0.2  # Together AI integration
+langchain-community==0.0.10  # Community integrations
+groq==0.4.1  # Groq Python SDK
+together==0.2.11  # Together AI SDK
+replicate==0.22.0  # Replicate SDK
+huggingface-hub==0.20.1  # HuggingFace SDK
+transformers==4.36.2  # For local models
 websockets==12.0
 
 # Email
