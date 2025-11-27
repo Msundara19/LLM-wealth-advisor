@@ -3,7 +3,7 @@ Application configuration and settings
 """
 
 from pydantic_settings import BaseSettings
-from pydantic import Field, validator
+from pydantic import field_validator
 from typing import Optional
 from pathlib import Path
 
@@ -17,16 +17,16 @@ class Settings(BaseSettings):
     """
 
     # Application Settings
-    ENVIRONMENT: str = Field(default="development", env="ENVIRONMENT")
-    DEBUG: bool = Field(default=True, env="DEBUG")
-    LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
+    ENVIRONMENT: str = "development"
+    DEBUG: bool = True
+    LOG_LEVEL: str = "INFO"
 
     # Database Configuration
-    DB_USER: str = Field(default="wealthadvisor", env="DB_USER")
-    DB_PASSWORD: str = Field(default="password", env="DB_PASSWORD")
-    DB_NAME: str = Field(default="wealthdb", env="DB_NAME")
-    DB_HOST: str = Field(default="localhost", env="DB_HOST")
-    DB_PORT: int = Field(default=5432, env="DB_PORT")
+    DB_USER: str = "wealthadvisor"
+    DB_PASSWORD: str = "password"
+    DB_NAME: str = "wealthdb"
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
 
     @property
     def DATABASE_URL(self) -> str:
@@ -38,112 +38,100 @@ class Settings(BaseSettings):
         )
 
     # Redis Configuration
-    REDIS_URL: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
-    REDIS_PASSWORD: Optional[str] = Field(default=None, env="REDIS_PASSWORD")
+    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_PASSWORD: Optional[str] = None
 
     # API Keys - Multiple Provider Support
     # Free/Affordable Providers
-    GROQ_API_KEY: Optional[str] = Field(default=None, env="GROQ_API_KEY")
-    TOGETHER_API_KEY: Optional[str] = Field(
-        default=None, env="TOGETHER_API_KEY")
-    ANYSCALE_API_KEY: Optional[str] = Field(
-        default=None, env="ANYSCALE_API_KEY")
-    REPLICATE_API_KEY: Optional[str] = Field(
-        default=None, env="REPLICATE_API_KEY")
-    HUGGINGFACE_API_KEY: Optional[str] = Field(
-        default=None, env="HUGGINGFACE_API_KEY")
+    GROQ_API_KEY: Optional[str] = None
+    TOGETHER_API_KEY: Optional[str] = None
+    ANYSCALE_API_KEY: Optional[str] = None
+    REPLICATE_API_KEY: Optional[str] = None
+    HUGGINGFACE_API_KEY: Optional[str] = None
 
     # Premium Providers (Optional)
-    OPENAI_API_KEY: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    ANTHROPIC_API_KEY: Optional[str] = Field(
-        default=None, env="ANTHROPIC_API_KEY")
+    OPENAI_API_KEY: Optional[str] = None
+    ANTHROPIC_API_KEY: Optional[str] = None
 
     # Market Data APIs (Free Options)
-    ALPHA_VANTAGE_API_KEY: Optional[str] = Field(
-        default=None, env="ALPHA_VANTAGE_API_KEY")
-    TWELVE_DATA_API_KEY: Optional[str] = Field(
-        default=None, env="TWELVE_DATA_API_KEY")
-    FINNHUB_API_KEY: Optional[str] = Field(default=None, env="FINNHUB_API_KEY")
-    FMP_API_KEY: Optional[str] = Field(default=None, env="FMP_API_KEY")
-    POLYGON_API_KEY: Optional[str] = Field(default=None, env="POLYGON_API_KEY")
+    ALPHA_VANTAGE_API_KEY: Optional[str] = None
+    TWELVE_DATA_API_KEY: Optional[str] = None
+    FINNHUB_API_KEY: Optional[str] = None
+    FMP_API_KEY: Optional[str] = None
+    POLYGON_API_KEY: Optional[str] = None
 
     # JWT Configuration
-    JWT_SECRET: str = Field(default="change-this-secret-key", env="JWT_SECRET")
-    JWT_ALGORITHM: str = Field(default="HS256", env="JWT_ALGORITHM")
-    JWT_EXPIRATION_HOURS: int = Field(default=24, env="JWT_EXPIRATION_HOURS")
+    JWT_SECRET: str = "change-this-secret-key"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_HOURS: int = 24
 
     # CORS Configuration
-    CORS_ORIGINS: str = Field(
-        default="http://localhost:3000,https://www.walletwealth.co.in",
-        env="CORS_ORIGINS"
-    )
+    CORS_ORIGINS: str = "http://localhost:3000,https://www.walletwealth.co.in"
 
     # Rate Limiting
-    RATE_LIMIT_PER_MINUTE: int = Field(default=60, env="RATE_LIMIT_PER_MINUTE")
-    RATE_LIMIT_PER_HOUR: int = Field(default=1000, env="RATE_LIMIT_PER_HOUR")
+    RATE_LIMIT_PER_MINUTE: int = 60
+    RATE_LIMIT_PER_HOUR: int = 1000
 
     # LLM Configuration
-    LLM_PROVIDER: str = Field(default="groq", env="LLM_PROVIDER")
-    LLM_MODEL: str = Field(default="mixtral-8x7b-32768", env="LLM_MODEL")
-    LLM_TEMPERATURE: float = Field(default=0.7, env="LLM_TEMPERATURE")
-    LLM_MAX_TOKENS: int = Field(default=2000, env="LLM_MAX_TOKENS")
+    LLM_PROVIDER: str = "groq"
+    LLM_MODEL: str = "mixtral-8x7b-32768"
+    LLM_TEMPERATURE: float = 0.7
+    LLM_MAX_TOKENS: int = 2000
 
     # Email Configuration
-    SMTP_HOST: Optional[str] = Field(default=None, env="SMTP_HOST")
-    SMTP_PORT: int = Field(default=587, env="SMTP_PORT")
-    SMTP_USER: Optional[str] = Field(default=None, env="SMTP_USER")
-    SMTP_PASSWORD: Optional[str] = Field(default=None, env="SMTP_PASSWORD")
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
 
     # Wallet Wealth API Integration
-    WALLET_WEALTH_API_URL: str = Field(
-        default="https://api.walletwealth.co.in",
-        env="WALLET_WEALTH_API_URL"
-    )
-    WALLET_WEALTH_API_KEY: Optional[str] = Field(
-        default=None, env="WALLET_WEALTH_API_KEY")
+    WALLET_WEALTH_API_URL: str = "https://api.walletwealth.co.in"
+    WALLET_WEALTH_API_KEY: Optional[str] = None
 
     # Monitoring
-    SENTRY_DSN: Optional[str] = Field(default=None, env="SENTRY_DSN")
-    PROMETHEUS_PORT: int = Field(default=9090, env="PROMETHEUS_PORT")
+    SENTRY_DSN: Optional[str] = None
+    PROMETHEUS_PORT: int = 9090
 
     # AWS Configuration
-    AWS_ACCESS_KEY_ID: Optional[str] = Field(
-        default=None, env="AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: Optional[str] = Field(
-        default=None, env="AWS_SECRET_ACCESS_KEY")
-    AWS_REGION: str = Field(default="ap-south-1", env="AWS_REGION")
-    S3_BUCKET_NAME: Optional[str] = Field(default=None, env="S3_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    AWS_REGION: str = "ap-south-1"
+    S3_BUCKET_NAME: Optional[str] = None
 
     # Encryption
-    ENCRYPTION_KEY: Optional[str] = Field(default=None, env="ENCRYPTION_KEY")
+    ENCRYPTION_KEY: Optional[str] = None
 
-    @validator("LLM_TEMPERATURE")
+    @field_validator("LLM_TEMPERATURE")
+    @classmethod
     def validate_temperature(cls, v):
         """Validate LLM temperature is within valid range"""
         if not 0 <= v <= 2:
             raise ValueError("LLM_TEMPERATURE must be between 0 and 2")
         return v
 
-    @validator("JWT_SECRET")
-    def validate_jwt_secret(cls, v, values):
+    @field_validator("JWT_SECRET")
+    @classmethod
+    def validate_jwt_secret(cls, v, info):
         """Ensure JWT secret is changed in production"""
-        if values.get(
-                "ENVIRONMENT") == "production" and v == "change-this-secret-key":
+        # Access other field values through info.data
+        environment = info.data.get("ENVIRONMENT", "development")
+        if environment == "production" and v == "change-this-secret-key":
             raise ValueError(
-                "JWT_SECRET must be changed for production environment")
+                "JWT_SECRET must be changed for production environment"
+            )
         return v
 
     class Config:
-        env_file = BASE_DIR / ".env"
+        env_file = str(BASE_DIR / ".env")
         case_sensitive = True
+        extra = "allow"
 
 
 # Create settings instance
 settings = Settings()
 
+
 # Validate critical settings
-
-
 def validate_settings():
     """Validate that all critical settings are configured"""
     errors = []
