@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useWebSocket } from '../context/WebSocketContext';
 
 interface Message {
   id: string;
@@ -15,7 +14,6 @@ const ChatInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { socket, isConnected } = useWebSocket();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
