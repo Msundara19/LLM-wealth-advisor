@@ -299,8 +299,7 @@ class MultiProviderLLMService:
 
             # Log the interaction
             logger.info(
-                f"Processed message for user {user_id} using {
-                    settings.LLM_PROVIDER}"
+                f"Processed message for user {user_id} using {settings.LLM_PROVIDER}"
             )
 
             return {

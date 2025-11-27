@@ -31,12 +31,11 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """Construct database URL"""
-        return f"postgresql+asyncpg://{
-            self.DB_USER}:{
-            self.DB_PASSWORD}@{
-            self.DB_HOST}:{
-                self.DB_PORT}/{
-                    self.DB_NAME}"
+        return (
+            f"postgresql+asyncpg://"
+            f"{self.DB_USER}:{self.DB_PASSWORD}@"
+            f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
 
     # Redis Configuration
     REDIS_URL: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
