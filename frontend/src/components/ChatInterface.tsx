@@ -1,251 +1,152 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader, Bot, User, Paperclip, Mic, MoreVertical } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useWebSocket } from '../context/WebSocketContext';
-import { chatService } from '../services/chatService';
 import toast from 'react-hot-toast';
 
 interface Message {
   id: string;
-  text: string;
-  sender: 'user' | 'bot';
+  type: 'user' | 'ai';
+  content: string;
   timestamp: Date;
-  isTyping?: boolean;
 }
 
 const ChatInterface: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputText, setInputText] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      type: 'ai',
+      content: 'Hello! I\'m your AI Wealth Advisor. How can I help you with your investments today?',
+      timestamp: new Date(),
+    },
+  ]);
+  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const { sendMessage, isConnected } = useWebSocket();
-
-  useEffect(() => {
-    // Initialize session
-    const initSession = () => {
-      const newSessionId = generateSessionId();
-      setSessionId(newSessionId);
-      
-      // Add welcome message
-      setMessages([{
-        id: '1',
-        text: "Hello! I'm your Wallet Wealth AI advisor. I can help you with investment advice, portfolio analysis, market insights, and financial planning. How can I assist you today?",
-        sender: 'bot',
-        timestamp: new Date()
-      }]);
-    };
-
-    initSession();
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const { socket, isConnected } = useWebSocket();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim() || isLoading) return;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'response') {
+          const aiMessage: Message = {
+            id: Date.now().toString(),
+            type: 'ai',
+            content: data.content,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, aiMessage]);
+          setIsLoading(false);
+        }
+      };
+    }
+  }, [socket]);
+
+  const handleSend = async () => {
+    if (!inputValue.trim()) return;
 
     const userMessage: Message = {
-      id: generateMessageId(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
+      id: Date.now().toString(),
+      type: 'user',
+      content: inputValue,
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue('');
     setIsLoading(true);
 
-    // Add typing indicator
-    const typingMessage: Message = {
-      id: 'typing',
-      text: '',
-      sender: 'bot',
-      timestamp: new Date(),
-      isTyping: true
-    };
-    setMessages(prev => [...prev, typingMessage]);
-
-    try {
-      if (isConnected) {
-        // Use WebSocket if connected
-        await sendMessage({
-          message: inputText,
-          session_id: sessionId
-        });
-      } else {
-        // Fallback to REST API
-        const response = await chatService.sendMessage({
-          message: inputText,
-          session_id: sessionId
-        });
-
-        const botMessage: Message = {
-          id: generateMessageId(),
-          text: response.response,
-          sender: 'bot',
-          timestamp: new Date()
+    if (isConnected && socket) {
+      socket.send(JSON.stringify({
+        type: 'message',
+        content: inputValue,
+      }));
+    } else {
+      // Mock response for demo
+      setTimeout(() => {
+        const mockResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: 'I received your message: "' + inputValue + '". In a production environment, I would provide personalized investment advice based on your portfolio and market conditions.',
+          timestamp: new Date(),
         };
-
-        setMessages(prev => 
-          prev.filter(msg => msg.id !== 'typing').concat(botMessage)
-        );
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error('Failed to send message. Please try again.');
-      setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
-    } finally {
-      setIsLoading(false);
+        setMessages((prev) => [...prev, mockResponse]);
+        setIsLoading(false);
+      }, 1000);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSend();
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
-
-  const generateSessionId = () => {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  };
-
-  const generateMessageId = () => {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  };
-
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-            <Bot className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">Wealth Advisor AI</h3>
-            <p className="text-xs text-gray-500">
-              {isConnected ? 'Online' : 'Connecting...'}
-            </p>
-          </div>
-        </div>
-        <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <MoreVertical className="w-5 h-5 text-gray-600" />
-        </button>
-      </div>
-
-      {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`flex max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'} gap-3`}>
-              {/* Avatar */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                message.sender === 'user' ? 'bg-gray-600' : 'bg-blue-600'
-              }`}>
-                {message.sender === 'user' ? (
-                  <User className="w-5 h-5 text-white" />
-                ) : (
-                  <Bot className="w-5 h-5 text-white" />
-                )}
-              </div>
-
-              {/* Message Content */}
-              <div className="flex flex-col">
-                <div className={`rounded-lg px-4 py-2 ${
-                  message.sender === 'user' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-100 text-gray-900'
-                }`}>
-                  {message.isTyping ? (
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{message.text}</p>
-                  )}
-                </div>
-                <span className={`text-xs text-gray-500 mt-1 ${
-                  message.sender === 'user' ? 'text-right' : 'text-left'
-                }`}>
-                  {formatTime(message.timestamp)}
-                </span>
-              </div>
+            <div
+              className={`max-w-2xl rounded-lg px-4 py-3 ${
+                message.type === 'user'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white border border-gray-200 text-gray-900'
+              }`}
+            >
+              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              <span className="text-xs opacity-70 mt-1 block">
+                {message.timestamp.toLocaleTimeString()}
+              </span>
             </div>
           </div>
         ))}
+
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+              <div className="flex space-x-2">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+              </div>
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <div className="border-t bg-white px-6 py-4">
-        <div className="flex items-end space-x-2">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <Paperclip className="w-5 h-5 text-gray-600" />
-          </button>
-          
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about investments, portfolio analysis, market trends..."
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              rows={1}
-              style={{ maxHeight: '120px' }}
-            />
-            <button className="absolute right-2 bottom-2 p-1 hover:bg-gray-100 rounded transition-colors">
-              <Mic className="w-5 h-5 text-gray-600" />
-            </button>
-          </div>
-
+      <div className="border-t border-gray-200 bg-white p-4">
+        <div className="flex space-x-4">
+          <textarea
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Ask about your investments, market trends, or get personalized advice..."
+            className="flex-1 resize-none border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows={3}
+          />
           <button
-            onClick={handleSendMessage}
-            disabled={!inputText.trim() || isLoading}
-            className={`p-3 rounded-lg transition-all ${
-              inputText.trim() && !isLoading
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
+            onClick={handleSend}
+            disabled={!inputValue.trim() || isLoading}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors self-end"
           >
-            {isLoading ? (
-              <Loader className="w-5 h-5 animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
+            Send
           </button>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {['Portfolio Analysis', 'Market Overview', 'Investment Ideas', 'Risk Assessment'].map((action) => (
-            <button
-              key={action}
-              onClick={() => setInputText(action)}
-              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
-            >
-              {action}
-            </button>
-          ))}
         </div>
       </div>
     </div>
