@@ -33,20 +33,20 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     logger.info("Starting Wallet Wealth LLM Advisor API")
-    
+
     # Initialize database
     await init_db()
-    
+
     # Initialize Redis
     await init_redis()
-    
+
     # Initialize LLM service
     LLMService.initialize()
-    
+
     logger.info("Application startup complete")
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down application")
     await close_db()
@@ -116,35 +116,36 @@ async def health_check() -> Dict[str, Any]:
             "llm": "checking"
         }
     }
-    
+
     try:
         # Check database connection
         from app.core.database import check_db_health
         db_healthy = await check_db_health()
         health_status["services"]["database"] = "operational" if db_healthy else "degraded"
-        
+
         # Check Redis connection
         from app.core.redis import check_redis_health
         redis_healthy = await check_redis_health()
         health_status["services"]["redis"] = "operational" if redis_healthy else "degraded"
-        
+
         # Check LLM service
         llm_healthy = LLMService.health_check()
         health_status["services"]["llm"] = "operational" if llm_healthy else "degraded"
-        
+
         # Overall status
-        if all(status == "operational" for status in health_status["services"].values()):
+        if all(
+                status == "operational" for status in health_status["services"].values()):
             health_status["status"] = "healthy"
         elif any(status == "degraded" for status in health_status["services"].values()):
             health_status["status"] = "degraded"
         else:
             health_status["status"] = "unhealthy"
-            
+
     except Exception as e:
         logger.error(f"Health check error: {str(e)}")
         health_status["status"] = "error"
         health_status["error"] = str(e)
-    
+
     return health_status
 
 
@@ -155,13 +156,12 @@ async def global_exception_handler(request: Request, exc: Exception):
     Handle all unhandled exceptions
     """
     logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
-    
+
     # Don't expose internal errors in production
     if settings.ENVIRONMENT == "production":
         return JSONResponse(
-            status_code=500,
-            content={"detail": "An internal error occurred. Please try again later."}
-        )
+            status_code=500, content={
+                "detail": "An internal error occurred. Please try again later."})
     else:
         return JSONResponse(
             status_code=500,
