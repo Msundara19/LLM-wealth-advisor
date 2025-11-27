@@ -13,28 +13,12 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // TODO: Replace with your actual WebSocket URL
     const ws = new WebSocket('ws://localhost:8000/ws');
-
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      setIsConnected(true);
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      setIsConnected(false);
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
+    ws.onopen = () => { console.log('Connected'); setIsConnected(true); };
+    ws.onclose = () => { console.log('Disconnected'); setIsConnected(false); };
+    ws.onerror = (e) => console.error('WebSocket error:', e);
     setSocket(ws);
-
-    return () => {
-      ws.close();
-    };
+    return () => ws.close();
   }, []);
 
   const sendMessage = (message: any) => {
@@ -52,8 +36,6 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({ children 
 
 export const useWebSocket = () => {
   const context = useContext(WebSocketContext);
-  if (context === undefined) {
-    throw new Error('useWebSocket must be used within a WebSocketProvider');
-  }
+  if (!context) throw new Error('useWebSocket must be used within WebSocketProvider');
   return context;
 };

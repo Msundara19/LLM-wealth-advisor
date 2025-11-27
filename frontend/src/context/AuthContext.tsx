@@ -20,35 +20,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password })
-      // });
-      // const data = await response.json();
-      
-      // Mock login for now
-      const mockUser: User = {
-        id: '1',
-        name: 'John Doe',
-        email: email
-      };
-      
-      setUser(mockUser);
-      setIsAuthenticated(true);
-      localStorage.setItem('auth_token', 'mock_token');
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
+    const mockUser: User = { id: '1', name: 'John Doe', email: email };
+    setUser(mockUser);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('auth_token');
   };
 
   return (
@@ -60,8 +39,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 };
