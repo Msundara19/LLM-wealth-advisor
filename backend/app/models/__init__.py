@@ -10,6 +10,7 @@ from app.models.portfolio import (
     Transaction, 
     AssetType
 )
+from app.models.appointment import Appointment, AppointmentStatus
 
 __all__ = [
     # User models
@@ -27,4 +28,8 @@ __all__ = [
     "PortfolioHolding",
     "Transaction",
     "AssetType",
+    
+    # Appointment models
+    "Appointment",
+    "AppointmentStatus",
 ]

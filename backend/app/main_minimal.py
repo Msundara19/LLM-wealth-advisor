@@ -51,6 +51,20 @@ class ChatResponse(BaseModel):
     model: str
 
 
+class AppointmentRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    service_type: str
+    preferred_date: str
+    preferred_time: str
+    message: Optional[str] = None
+
+
+# In-memory storage for appointments (for demo/minimal mode)
+appointments_db: list = []
+
+
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -107,6 +121,69 @@ async def chat(request: ChatRequest):
         raise
     except Exception as e:
         return ChatResponse(response=f"Error: {str(e)}", model="error")
+
+
+# Appointment endpoints
+@app.post("/api/appointments/book")
+async def book_appointment(request: AppointmentRequest):
+    """
+    Book a new appointment
+    """
+    appointment = {
+        "id": len(appointments_db) + 1,
+        "name": request.name,
+        "email": request.email,
+        "phone": request.phone,
+        "service_type": request.service_type,
+        "preferred_date": request.preferred_date,
+        "preferred_time": request.preferred_time,
+        "message": request.message,
+        "status": "pending",
+        "created_at": __import__('datetime').datetime.now().isoformat()
+    }
+    
+    appointments_db.append(appointment)
+    
+    print(f"📅 New Appointment: {request.name} - {request.service_type} on {request.preferred_date} at {request.preferred_time}")
+    print(f"   Contact: {request.phone} | {request.email}")
+    
+    return {
+        "id": appointment["id"],
+        "message": f"Thank you {request.name}! Your appointment request has been received. We will contact you at {request.phone} to confirm.",
+        "status": "pending"
+    }
+
+
+@app.get("/api/appointments")
+async def list_appointments(admin_token: str = None):
+    """
+    List all appointments (simple admin auth)
+    """
+    if admin_token != "wallet-wealth-admin-2024":
+        raise HTTPException(status_code=401, detail="Admin access required. Add ?admin_token=wallet-wealth-admin-2024")
+    
+    return {
+        "appointments": appointments_db,
+        "total": len(appointments_db)
+    }
+
+
+@app.get("/api/appointments/stats")
+async def appointment_stats(admin_token: str = None):
+    """
+    Get appointment statistics
+    """
+    if admin_token != "wallet-wealth-admin-2024":
+        raise HTTPException(status_code=401, detail="Admin access required")
+    
+    pending = len([a for a in appointments_db if a["status"] == "pending"])
+    confirmed = len([a for a in appointments_db if a["status"] == "confirmed"])
+    
+    return {
+        "total": len(appointments_db),
+        "pending": pending,
+        "confirmed": confirmed
+    }
 
 
 if __name__ == "__main__":

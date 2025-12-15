@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Chat from './pages/Chat';
 import Appointment from './pages/Appointment';
 import About from './pages/About';
+import Admin from './pages/Admin';
 import './index.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/chat" element={<Chat />} />
             <Route path="/appointment" element={<Appointment />} />
             <Route path="/about" element={<About />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
         <Footer />

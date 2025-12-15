@@ -36,13 +36,41 @@ const Appointment: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    // In production, you would send this to your backend or email service
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // API URL
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
-    // Create mailto link as fallback
-    const subject = `Appointment Request - ${formData.serviceType}`;
-    const body = `
+    try {
+      const response = await fetch(`${API_URL}/api/appointments/book`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          service_type: formData.serviceType,
+          preferred_date: formData.date,
+          preferred_time: formData.time,
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to book appointment');
+      }
+
+      const data = await response.json();
+      console.log('Appointment booked:', data);
+      
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error booking appointment:', error);
+      
+      // Fallback to email if API fails
+      const subject = `Appointment Request - ${formData.serviceType}`;
+      const body = `
 Name: ${formData.name}
 Email: ${formData.email}
 Phone: ${formData.phone}
@@ -52,15 +80,15 @@ Service Type: ${formData.serviceType}
 
 Message:
 ${formData.message}
-    `;
+      `;
 
-    // Open email client
-    window.location.href = `mailto:sridharan@walletwealth.co.in?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:sridharan@walletwealth.co.in?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }
   };
 
   const serviceTypes = [
