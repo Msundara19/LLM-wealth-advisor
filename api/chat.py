@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import urllib.request
 
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
@@ -37,18 +38,29 @@ class handler(BaseHTTPRequestHandler):
             if not GROQ_API_KEY:
                 response_text = "LLM service not configured."
             else:
-                from groq import Groq
-                client = Groq(api_key=GROQ_API_KEY)
-                completion = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=[
+                # Use HTTP API directly instead of SDK
+                req_data = json.dumps({
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [
                         {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": message},
+                        {"role": "user", "content": message}
                     ],
-                    temperature=0.7,
-                    max_tokens=1024,
+                    "temperature": 0.7,
+                    "max_tokens": 1024
+                }).encode('utf-8')
+
+                req = urllib.request.Request(
+                    'https://api.groq.com/openai/v1/chat/completions',
+                    data=req_data,
+                    headers={
+                        'Authorization': f'Bearer {GROQ_API_KEY}',
+                        'Content-Type': 'application/json'
+                    }
                 )
-                response_text = completion.choices[0].message.content
+
+                with urllib.request.urlopen(req) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+                    response_text = result['choices'][0]['message']['content']
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
@@ -62,3 +74,10 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({"response": f"Error: {str(e)}", "model": "error"}).encode())
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps({"message": "Chat API ready"}).encode())
