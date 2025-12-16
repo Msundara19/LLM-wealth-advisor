@@ -32,7 +32,7 @@ How can I assist you today?`,
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // API URL - change this for production
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  const API_URL = const API_URL = process.env.REACT_APP_API_URL || '';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

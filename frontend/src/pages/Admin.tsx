@@ -27,7 +27,7 @@ const Admin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+  const API_URL = process.env.REACT_APP_API_URL || '';
   const ADMIN_TOKEN = 'wallet-wealth-admin-2024';
 
   const handleLogin = (e: React.FormEvent) => {

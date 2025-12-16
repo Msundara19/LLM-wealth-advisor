@@ -75,8 +75,7 @@ const Appointment: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
+    const API_URL = process.env.REACT_APP_API_URL || '';
     try {
       // 1. Save to backend
       const response = await fetch(`${API_URL}/api/appointments/book`, {
