@@ -1,4 +1,5 @@
 # LLM Wealth Advisor for Wallet Wealth
+<img width="1142" height="845" alt="image" src="https://github.com/user-attachments/assets/fd4d9162-fadb-4b38-b51b-8c697c5c987c" />
 
 <img width="1130" height="848" alt="image" src="https://github.com/user-attachments/assets/5e682d24-055b-40ce-9ab9-32e38c69980e" />
 
@@ -168,10 +169,4 @@ curl -X POST https://llm-wealth-advisor.vercel.app/api/chat \
 
 This is a proprietary project for Wallet Wealth LLP.
 
-## License
-
-Proprietary - Wallet Wealth LLP
-
-## Support
-
-For issues or questions, contact: sridharan@walletwealth.co.in
+visit the websit at https://llm-wealth-advisor-51p3f6f3l-msundaras-projects.vercel.app/
