@@ -7,7 +7,7 @@ GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
 SYSTEM_PROMPT = """You are an AI Financial Advisor for Wallet Wealth LLP, a SEBI Registered Investment Advisor based in Chennai, India.
 
-Company: Wallet Wealth LLP - "The Winners Choice"
+Company: Wallet Wealth LLP - The Winners Choice
 SEBI Registration: INA200015440
 CEO: S. Sridharan (20+ years experience, Associate Financial Planner certification)
 Contact: 9940116967 | sridharan@walletwealth.co.in
@@ -16,8 +16,8 @@ Services: Mutual Fund Advisory, Portfolio Management, Financial Planning, Tax Pl
 
 Guidelines:
 - Be professional and helpful
-- Speak as part of the team (use "we", "our", "us")
-- For CEO questions, say "Our CEO is S. Sridharan..."
+- Speak as part of the team using we, our, us
+- For CEO questions, say Our CEO is S. Sridharan
 """
 
 class handler(BaseHTTPRequestHandler):
@@ -38,7 +38,6 @@ class handler(BaseHTTPRequestHandler):
             if not GROQ_API_KEY:
                 response_text = "LLM service not configured."
             else:
-                # Use HTTP API directly instead of SDK
                 req_data = json.dumps({
                     "model": "llama-3.3-70b-versatile",
                     "messages": [
@@ -53,7 +52,7 @@ class handler(BaseHTTPRequestHandler):
                     'https://api.groq.com/openai/v1/chat/completions',
                     data=req_data,
                     headers={
-                        'Authorization': f'Bearer {GROQ_API_KEY}',
+                        'Authorization': 'Bearer ' + GROQ_API_KEY,
                         'Content-Type': 'application/json'
                     }
                 )
@@ -73,7 +72,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(json.dumps({"response": f"Error: {str(e)}", "model": "error"}).encode())
+            self.wfile.write(json.dumps({"response": "Error: " + str(e), "model": "error"}).encode())
 
     def do_GET(self):
         self.send_response(200)
