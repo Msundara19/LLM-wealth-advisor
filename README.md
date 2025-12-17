@@ -4,48 +4,47 @@ A sophisticated AI-powered financial advisor chatbot integrated into Wallet Weal
 
 ## Features
 
-- 🤖 AI-powered financial advisory using OpenAI/Anthropic APIs
+- 🤖 AI-powered financial advisory using Groq/Llama 3.3 70B
 - 💼 Portfolio analysis and recommendations
-- 📊 Real-time market data integration
-- 🔒 Secure authentication and data encryption
+- 📊 Real-time financial guidance for Indian markets
+- 🔒 Secure authentication and admin dashboard
 - 📱 Responsive web interface
-- 🚀 Production-ready deployment setup
+- 🚀 Production-ready Vercel deployment
+- 📅 Appointment booking system with email notifications
 
 ## Tech Stack
 
 ### Backend
 - **FastAPI** - High-performance Python web framework
-- **LangChain** - LLM orchestration and chain management
-- **PostgreSQL** - User data and conversation storage
-- **Redis** - Caching and session management
-- **Celery** - Async task processing
+- **Groq API** - LLM inference with Llama 3.3 70B
+- **Vercel Serverless** - API functions deployment
+- **Python 3.12** - Runtime environment
 
 ### Frontend
-- **React** - UI framework
+- **React 18** - UI framework
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
-- **Socket.io** - Real-time communication
+- **React Router** - Client-side routing
 
 ### Infrastructure
-- **Docker** - Containerization
-- **Kubernetes** - Container orchestration
+- **Vercel** - Full-stack deployment
 - **GitHub Actions** - CI/CD pipeline
-- **AWS/GCP** - Cloud deployment
+- **EmailJS** - Email notification service
 
 ## Quick Start
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- Docker & Docker Compose
+- Groq API Key ([console.groq.com](https://console.groq.com))
 - Git
 
 ### Local Development
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/llm-wealth-advisor.git
-cd llm-wealth-advisor
+git clone https://github.com/Msundara19/LLM-wealth-advisor.git
+cd LLM-wealth-advisor
 ```
 
 2. Set up environment variables:
@@ -54,87 +53,117 @@ cp .env.example .env
 # Edit .env with your API keys and configuration
 ```
 
-3. Start with Docker Compose:
-```bash
-docker-compose up -d
-```
-
-4. Access the application:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-
-### Development without Docker
-
-Backend:
+3. Start Backend:
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+export GROQ_API_KEY=your_groq_key
+uvicorn app.main_minimal:app --reload --port 8000
 ```
 
-Frontend:
+4. Start Frontend:
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
+
+5. Access the application:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
 
 ## Project Structure
 
 ```
-llm-wealth-advisor/
+LLM-wealth-advisor/
+├── api/                          # Vercel Serverless Functions
+│   ├── chat.py                   # AI chat endpoint
+│   ├── appointments.py           # Booking endpoint
+│   └── index.py                  # Health check
 ├── backend/
 │   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── services/
-│   │   └── main.py
+│   │   ├── api/                  # API routes
+│   │   ├── core/                 # Config, database, security
+│   │   ├── models/               # SQLAlchemy models
+│   │   ├── services/             # Business logic
+│   │   └── main_minimal.py       # FastAPI application
 │   ├── tests/
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── services/
+│   │   ├── components/           # Navbar, Footer
+│   │   ├── pages/                # Home, Chat, Appointment, Admin
 │   │   └── App.tsx
+│   ├── tailwind.config.js
 │   └── package.json
-├── infrastructure/
-│   ├── docker/
-│   ├── kubernetes/
-│   └── terraform/
-├── .github/
-│   └── workflows/
-├── docker-compose.yml
+├── vercel.json                   # Deployment configuration
 └── README.md
 ```
 
 ## Deployment
 
-### GitHub Codespaces
-1. Open in Codespaces
-2. Run `./scripts/setup-codespace.sh`
-3. Access via forwarded ports
+### Vercel Deployment
 
-### Production Deployment
-See [DEPLOYMENT.md](./docs/DEPLOYMENT.md) for detailed instructions.
+1. Push to GitHub
+2. Import project on [Vercel](https://vercel.com)
+3. Add environment variables:
+   - `GROQ_API_KEY` - Your Groq API key
+   - `REACT_APP_EMAILJS_SERVICE_ID` - EmailJS service ID
+   - `REACT_APP_EMAILJS_TEMPLATE_ID` - EmailJS template ID
+   - `REACT_APP_EMAILJS_PUBLIC_KEY` - EmailJS public key
+4. Deploy!
+
+### GitHub Codespaces
+
+1. Open in Codespaces
+2. Run backend: `cd backend && uvicorn app.main_minimal:app --reload --port 8000`
+3. Run frontend: `cd frontend && npm start`
+4. Access via forwarded ports
 
 ## API Documentation
 
-API documentation is available at `/docs` when running the backend server.
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/chat` | Send message to AI advisor |
+| `POST` | `/api/appointments` | Book an appointment |
+| `GET` | `/api/appointments?admin_token=xxx` | List appointments (admin) |
+| `GET` | `/api` | Health check |
+
+### Example Request
+
+```bash
+curl -X POST https://llm-wealth-advisor.vercel.app/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What are the best mutual funds for beginners?"}'
+```
 
 ## Security
 
-- All API endpoints require authentication
-- Data encryption at rest and in transit
-- Regular security audits
-- GDPR/financial compliance ready
+- All admin endpoints require authentication
+- API keys stored as environment variables
+- CORS configured for production domains
+- No sensitive data exposed in client code
+
+## About Wallet Wealth LLP
+
+**Wallet Wealth LLP** is a SEBI-registered Investment Advisor (Registration: **INA200015440**) based in Chennai, India.
+
+**Services:**
+- Mutual Fund Advisory
+- Portfolio Management
+- Financial Planning
+- Tax Planning
+- Retirement Planning
+- Insurance Planning
 
 ## Contributing
 
-See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for guidelines.
+This is a proprietary project for Wallet Wealth LLP.
 
 ## License
 
@@ -142,4 +171,4 @@ Proprietary - Wallet Wealth LLP
 
 ## Support
 
-For issues or questions, contact: tech@walletwealth.co.in
+For issues or questions, contact: sridharan@walletwealth.co.in
