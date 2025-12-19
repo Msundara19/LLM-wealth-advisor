@@ -4,6 +4,7 @@
 <img width="1130" height="848" alt="image" src="https://github.com/user-attachments/assets/5e682d24-055b-40ce-9ab9-32e38c69980e" />
 
 
+click here to view the application : https://llm-wealth-advisor.vercel.app/
 A sophisticated AI-powered financial advisor chatbot integrated into Wallet Wealth's website, providing personalized investment guidance, portfolio analysis, and financial planning assistance.
 
 ## Features
