@@ -166,8 +166,4 @@ curl -X POST https://llm-wealth-advisor.vercel.app/api/chat \
 - Retirement Planning
 - Insurance Planning
 
-## Contributing
 
-This is a proprietary project for Wallet Wealth LLP.
-
-visit the websit at https://llm-wealth-advisor-51p3f6f3l-msundaras-projects.vercel.app/
