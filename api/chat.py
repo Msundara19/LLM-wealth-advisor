@@ -42,7 +42,7 @@ class handler(BaseHTTPRequestHandler):
             if OPENROUTER_API_KEY:
                 api_url = 'https://openrouter.ai/api/v1/chat/completions'
                 api_key = OPENROUTER_API_KEY
-                model = 'meta-llama/llama-3.3-8b-instruct:free'
+                model = 'meta-llama/llama-3.3-70b-instruct:free'
                 headers = {
                     'Authorization': 'Bearer ' + api_key,
                     'Content-Type': 'application/json',
